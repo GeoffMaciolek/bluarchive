@@ -4,6 +4,7 @@
 
 import configparser
 import logging
+import sys
 from os import environ, makedirs, path
 from posixpath import basename as url_filename
 from subprocess import DEVNULL, PIPE, Popen
@@ -18,6 +19,10 @@ class BluArchive:
     _config: configparser.ConfigParser
     _log: logging.Logger
     _s: requests.Session
+
+    ##### TRYING
+
+#    _argv: sys.argv
 
     _user_id: int
     _download_patterns: bool
@@ -160,8 +165,17 @@ class BluArchive:
         enrollments = r.json()
 
         for enrollment in enrollments:
-            playlist_id = enrollment["playlistId"]
-            if enrollment["archived"]:
+            
+            print("Length: ",len(sys.argv))
+            print(sys.argv)
+
+            if len(sys.argv) == 2: # We'll just download the one. (We break out later)
+                print("Downloading specified item: ", sys.argv[1])
+                playlist_id = sys.argv[1]
+            else:
+                playlist_id = enrollment["playlistId"]
+
+            if (enrollment["archived"]) and (not len(sys.argv) == 2):
                 self._log.info("Skipping archived playlist %s", playlist_id)
                 continue
 
@@ -216,6 +230,12 @@ class BluArchive:
                     if environ.get("BLU_TEST") == "1":
                         break
             if environ.get("BLU_TEST") in ["1", "2"]:
+                break
+            # Bail if there's only one - right?
+            if len(sys.argv) == 2:
+                print("Only getting one")
+            else:
+                print("I  guess we keep going...")
                 break
 
     def download_episode(self, out_dir: str, episode_number: int, episode_data: dict):
