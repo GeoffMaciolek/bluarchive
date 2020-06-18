@@ -234,9 +234,9 @@ class BluArchive:
             # Bail if there's only one - right?
             if len(sys.argv) == 2:
                 print("Only getting one")
+                break
             else:
                 print("I  guess we keep going...")
-                break
 
     def download_episode(self, out_dir: str, episode_number: int, episode_data: dict):
         episode_id = episode_data["episodeId"]
